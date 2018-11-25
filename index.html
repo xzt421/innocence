@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>音频和视频</title>
+	</head>
+	<style type="text/css">
+		* {
+			margin: 0px;
+			padding: 0px;
+		}
+		
+		audio {
+			position: absolute;
+			top: 777px;
+			left: 395px;
+		}
+		
+		.musicbox {
+			width: 540px;
+			height: 960px;
+			border: 1px solid #CCCCCC;
+			background: #FCFBF7;
+			margin: 0px auto;
+		}
+		
+		.info {
+			width: 100%;
+			height: 100px;
+			text-align: center;
+		}
+		
+		h2 {
+			font-weight: lighter;
+			margin: 20px auto;
+		}
+		
+		.img {
+			width: 520px;
+			height: 520px;
+			border: 10px solid #4A4542;
+			border-radius: 50%;
+			background: url(img/T001R300x300M000001Ic36m4AhaBw.jpg) no-repeat center;
+			background-size: cover;
+			overflow: hidden;
+			margin: 20px auto 0px;
+			animation: change 15s infinite cubic-bezier(0, 0, 1, 1);
+			animation-play-state: paused;
+		}
+		
+		@keyframes change {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+		
+		.lrc {
+			width: 100%;
+			height: 160px;
+			list-style: none;
+			margin: 0px auto;
+			overflow: hidden;
+			position: relative;
+		}
+		
+		.lrc ul {
+			width: 100%;
+			height: 100%;
+			list-style: none;
+			position: absolute;
+			top: 50px;
+			transition: all 0.2s;
+		}
+		
+		.lrc li {
+			width: 100%;
+			height: 25px;
+			margin: 5px 0px;
+			color: #CCCCCC;
+			text-align: center;
+			line-height: 100px;
+		}
+		
+		.controls {
+			width: 100%;
+			height: 100px;
+		}
+		
+		m,
+		s {
+			text-decoration: none;
+		}
+		
+		.time {
+			width: 100%;
+			height: 38px;
+			line-height: 40px;
+			text-align: center;
+		}
+		
+		.progress {
+			display: inline-block;
+			width: 300px;
+			height: 5px;
+			border-radius: 5px;
+			margin: 0px 10px;
+			background: #666666;
+			position: relative;
+			top: -4px;
+		}
+		
+		.point {
+			display: block;
+			width: 0px;
+			height: 100%;
+			background: cyan;
+		}
+		
+		.point span {
+			content: "";
+			display: block;
+			width: 8px;
+			height: 10px;
+			border: 2px solid #CCCCCC;
+			border-radius: 50%;
+			background: #ffffff;
+			cursor: pointer;
+			float: right;
+			position: relative;
+			top: -4px;
+			left: 10px;
+		}
+		
+		.btn {
+			width: 100%;
+			height: 100px;
+			text-align: center;
+		}
+		
+		.btn span {
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+			color: #CCCCCC;
+			line-height: 50px;
+			border: 1px solid #CCCCCC;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+	</style>
+
+	<body>
+		<div class="musicbox">
+			<audio src="audio/Avril Lavigne - Innocence.mp3" loop></audio>
+			<div class="info">
+				<h2>Innocence</h2>
+				<p>- Avril Lavigne -</p>
+			</div>
+			<div class="img"></div>
+			<div class="lrc">
+				<ul>
+
+				</ul>
+			</div>
+
+			<div class="controls">
+				<div class="time">
+					<span class="current"><m>00</m>:<s>00</s></span>
+					<span class="progress"><span class="point"><span></span></span>
+					</span>
+					<span class="duration"><m>00</m>:<s>00</s></span>
+				</div>
+				<div class="btn">
+					<span>播放</span>
+				</div>
+			</div>
+		</div>
+
+		<!--<audio src="music/yinyue.mp3" controls="" loop=""></audio>
+		<video width="800" height="" autoplay="" controls="" loop="">
+			<source src="video/min-video.mp4" type="video/mp4"></source>
+			<source src="myvideo.ogv" type="video/ogg"></source>
+			<source src="myvideo.webm" type="video/webm"></source>
+			<object width="" height="" type="application/x-shockwave-flash" data="myvideo.swf">
+				<param name="movie" value="myvideo.swf" />
+				<param name="flashvars" value="autostart=true&amp;file=myvideo.swf" />
+			</object>
+			当前浏览器不支持 video直接播放，点击这里下载视频： <a href="myvideo.webm">下载视频</a>
+		</video>-->
+
+	</body>
+	<script src="js/jquery-3.2.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		//获取歌词
+		$.ajax({
+			type: "get",
+			url: "innocenceLRC.txt",
+			async: true
+		}).done(function(data) {
+			data = data.split("[")
+			$.each(data, function(i, v) {
+				data = v.split("]")
+				if(i > 0) {
+					$(".lrc ul").html($(".lrc ul").html() + "<li>" + data[1] + "</li>")
+				}else{
+					$(".lrc ul").html($(".lrc ul").html() + "<li> </li>")
+				}
+				var data = data
+				$("audio")[0].addEventListener("timeupdate", function() {
+					var s = Number(data[0].split(":")[0]) * 60 + Number(data[0].split(":")[1])
+					if($("audio")[0].currentTime >= s) {
+						$(".lrc li").eq(i).css({
+							"color": "red",
+							"fontSize": "25px",
+							"padding": "5px 0px"
+						}).siblings().css({
+							"color": "#CCCCCC",
+							"fontSize": "14px",
+							"padding": "0px",
+						})
+						$(".lrc li").eq(i).prev().css({"fontSize":"18px","color":"#666666"})
+						$(".lrc li").eq(i).next().css({"fontSize":"18px","color":"#666666"})
+						$('.lrc ul').css('top', -$(".lrc li").eq(i-1).position().top + 'px')
+					}
+				})
+			})
+		})
+		//同步时间
+		$("audio")[0].addEventListener("timeupdate", function() {
+			parseInt($("audio")[0].currentTime % 60 < 10 ? $(".current s").html("0" + parseInt($("audio")[0].currentTime % 60)) : $(".current s").html(parseInt($("audio")[0].currentTime % 60)))
+			parseInt($("audio")[0].currentTime % 60 < 10 ? $(".current m").html("0" + parseInt($("audio")[0].currentTime / 60)) : $(".current m").html(parseInt($("audio")[0].currentTime / 60)))
+			parseInt($("audio")[0].duration % 60 < 10 ? $(".duration s").html("0" + parseInt($("audio")[0].duration % 60)) : $(".duration s").html(parseInt($("audio")[0].duration % 60)))
+			parseInt($("audio")[0].duration % 60 < 10 ? $(".duration m").html("0" + parseInt($("audio")[0].duration / 60)) : $(".duration m").html(parseInt($("audio")[0].duration / 60)))
+			$(".point").css("width", $(".progress").width() * parseInt($("audio")[0].currentTime) / parseInt($("audio")[0].duration))
+			if($("audio")[0].currentTime == $("audio")[0].duration) {
+				$(".img").css("animation-play-state", "paused")
+			}
+		})
+		//点击播放/暂停
+		$(".btn span").on("click", function() {
+			if($("audio")[0].paused) {
+				$("audio")[0].play()
+				$("audio")[0].paused = false
+				$(".img").css("animation-play-state", "running")
+				$(this).html("暂停")
+			} else {
+				$("audio")[0].pause()
+				$("audio")[0].paused = true
+				$(".img").css("animation-play-state", "paused")
+				$(this).html("播放")
+			}
+		})
+	</script>
+
+</html>
